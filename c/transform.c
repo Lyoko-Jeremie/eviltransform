@@ -1,3 +1,7 @@
+#ifndef  _USE_MATH_DEFINES
+#define  _USE_MATH_DEFINES
+#endif
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -12,7 +16,7 @@
 
 #define fabs(x) __ev_fabs(x)
 /* do not use >=, or compiler may not know to optimize this with a simple (x & 0x80...0). */
-INLINE static double __ev_fabs(double x){ return x > 0.0 ? x : -x; }
+INLINE static double __ev_fabs(double x) { return x > 0.0 ? x : -x; }
 
 INLINE static int outOfChina(double lat, double lng) {
 	if (lng < 72.004 || lng > 137.8347) {
@@ -36,11 +40,11 @@ void transform(double x, double y, double *lat, double *lng) {
 	*lat = d;
 	*lng = d;
 
-	*lat += 20.0*sin(yPi) + 40.0*sin(yPi/3.0);
-	*lng += 20.0*sin(xPi) + 40.0*sin(xPi/3.0);
+	*lat += 20.0*sin(yPi) + 40.0*sin(yPi / 3.0);
+	*lng += 20.0*sin(xPi) + 40.0*sin(xPi / 3.0);
 
-	*lat += 160.0*sin(yPi/12.0) + 320*sin(yPi/30.0);
-	*lng += 150.0*sin(xPi/12.0) + 300.0*sin(xPi/30.0);
+	*lat += 160.0*sin(yPi / 12.0) + 320 * sin(yPi / 30.0);
+	*lng += 150.0*sin(xPi / 12.0) + 300.0*sin(xPi / 30.0);
 
 	*lat *= 2.0 / 3.0;
 	*lng *= 2.0 / 3.0;
@@ -54,7 +58,7 @@ static void delta(double lat, double lng, double *dLat, double *dLng) {
 		return;
 	}
 	const double ee = 0.00669342162296594323;
-	transform(lng-105.0, lat-35.0, dLat, dLng);
+	transform(lng - 105.0, lat - 35.0, dLat, dLng);
 	double radLat = lat / 180.0 * M_PI;
 	double magic = sin(radLat);
 	magic = 1 - ee*magic*magic;
@@ -103,33 +107,35 @@ void gcj2wgs_exact(double gcjLat, double gcjLng, double *wgsLat, double *wgsLng)
 	pLat = gcjLat + dLat;
 	pLng = gcjLng + dLng;
 	int i;
-	for (i=0; i<30; i++) {
-		*wgsLat = (mLat+pLat) / 2;
-		*wgsLng = (mLng+pLng) / 2;
+	for (i = 0; i < 30; i++) {
+		*wgsLat = (mLat + pLat) / 2;
+		*wgsLng = (mLng + pLng) / 2;
 		double tmpLat, tmpLng;
 		wgs2gcj(*wgsLat, *wgsLng, &tmpLat, &tmpLng);
 		dLat = tmpLat - gcjLat;
 		dLng = tmpLng - gcjLng;
-		if ( (fabs(dLat)<threshold) && (fabs(dLng)<threshold) ) {
+		if ((fabs(dLat) < threshold) && (fabs(dLng) < threshold)) {
 			return;
 		}
 		if (dLat > 0) {
 			pLat = *wgsLat;
-		} else {
+		}
+		else {
 			mLat = *wgsLat;
 		}
 		if (dLng > 0) {
 			pLng = *wgsLng;
-		} else {
+		}
+		else {
 			mLng = *wgsLng;
 		}
 	}
 }
 
 double distance(double latA, double lngA, double latB, double lngB) {
-	double arcLatA = latA * M_PI/180;
-	double arcLatB = latB * M_PI/180;
-	double x = cos(arcLatA) * cos(arcLatB) * cos((lngA-lngB)*M_PI/180);
+	double arcLatA = latA * M_PI / 180;
+	double arcLatB = latB * M_PI / 180;
+	double x = cos(arcLatA) * cos(arcLatB) * cos((lngA - lngB)*M_PI / 180);
 	double y = sin(arcLatA) * sin(arcLatB);
 	double s = x + y;
 	if (s > 1) {
